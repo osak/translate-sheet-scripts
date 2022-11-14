@@ -8,30 +8,15 @@ import gasPlugin from "https://esm.sh/esbuild-gas-plugin@0.5.0/mod.ts";
 import { ghDescribe } from "https://raw.githubusercontent.com/proudust/gh-describe/v1.5.1/core/mod.ts";
 
 const profiles = {
-  "ddlc": {
-    name: "Doki Doki Literature Club! 日本語化 作業所",
-    scriptId: "1zp64PCtW2FYmfDMXn4nFT5g9tA5CWPAaP-qRBg-i0OUb5mjpX1_iOHYr",
-  },
-  "ddlc-mas": {
-    name: "DDLC Monika After Story 日本語化 作業所",
-    scriptId: "1rKilgJgbw-I_EEMvhYPm17X4BkED0xQkuLo_lVWdM90iXyTOhNi9-rh6",
-  },
-  "ddlc-3rdanniv": {
-    name: "DDLC 3rd-anniversary Twitch Writes 日本語化 作業所",
-    scriptId: "19u-8kNq3jPbQgr6_QeLqhGH7jJLLT76YjtykLWxXl8ahX1p3GbjDkKhD",
-  },
-  "dwellers-ep": {
-    name: "Dweller's Empty Path 日本語化 作業所",
-    scriptId: "1jv0pY3SZDm8_gCV_4DwI80NQTDWwJMY5Bci0ZGkNa7L2gXN_IG7XGp5P",
-  },
-  "dwellers-ec": {
-    name: "Escaped Chasm 日本語化 作業所",
-    scriptId: "1JJPXEJ8hzzfHXnkPTfXbL3iAiPoaJB2ZTa6Iq4DkYHnNpAXfM0pe35jq",
+  "main": {
+    name: "Main script",
+    scriptId: "",
   },
 } as const;
 
 async function generateVersionTs() {
-  const { describe } = await ghDescribe({ defaultTag: "0.0.0" });
+  // const { describe } = await ghDescribe({ defaultTag: "0.0.0" });
+  const describe = 'v0.0.1';
   await Deno.writeTextFile("version.ts", `export const version = "${describe}";\n`);
 }
 
@@ -100,7 +85,7 @@ switch (args._[0] || "build") {
   case "build": {
     await generateVersionTs();
     await Promise.all([
-      cliBuild(),
+      //cliBuild(),
       ...Object.entries(profiles).map(async ([id, { name }]) => {
         const dist = join("dist", `gas-${id}`);
         await gasBuild(dist, name);
