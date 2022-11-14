@@ -24,7 +24,7 @@ type CheckFunc = (args: CheckArgs) => string | undefined;
  * 字数が全角 16 文字 (半角 32 文字) を超える場合
  */
 export const checkLength: CheckFunc = (
-  { translate, sheetName, sheetRowNumber },
+  { original, translate, sheetName, sheetRowNumber },
 ) => {
   const lines = translate.split("\n").map((s) => s.replace(/\\(?:SE\[\d+\]|\.)/g, ""));
   const length = Math.max(
@@ -38,13 +38,10 @@ export const checkLength: CheckFunc = (
   );
   if (40 < length) {
     return trimIndent`
-      字数が全角 20 文字 (半角 40 文字) を超えています。
-      原文: "${translate}" (${sheetName}:${sheetRowNumber})
-    `;
-  } else if (32 < length) {
-    return trimIndent`
-      字数が全角 16 文字 (半角 32 文字) を超えています。
-      原文: "${translate}" (${sheetName}:${sheetRowNumber})
+      1行の文字数が全角 20 文字 (半角 40 文字) を超えています。
+      原文: "${original}"
+      訳文: "${translate}"
+      (${sheetName}:${sheetRowNumber})
     `;
   }
 };
@@ -59,7 +56,7 @@ export function checkAll(sheets: Sheet[]): string {
       const e = sheet
         .getRange("A3:F")
         .getValues()
-        .reduce<string[]>((errors, [_mapId, id, original, attr, translate], index) => {
+        .reduce<string[]>((errors, [_mapId, id, attr, original, translate], index) => {
           const sheetRowNumber = index + 3;
           const args: CheckArgs = {
             id,
