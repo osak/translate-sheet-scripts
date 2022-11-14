@@ -8,6 +8,7 @@ import {
 import * as Contexts from "./generator/context.ts";
 import { generateCode } from "./generator/renpy.ts";
 import { generateCode as generateJson } from "./generator/json.ts";
+import { generateCode as generateTransParserJson } from "./generator/transParserJson.ts";
 import * as RenPyCheck from "./check/renpy-check.ts";
 import * as RpgMvCheck from "./check/rpgmv-check.ts";
 import { updatePullRequest } from "./updatePullRequest.ts";
@@ -29,15 +30,15 @@ global.onOpen = () => {
   SpreadsheetApp.getActiveSpreadsheet().addMenu("スクリプト", [
     { name: "翻訳のチェック", functionName: "checkTranslates" },
     null,
-    { name: "シートの書式再設定（全体）", functionName: "fixSpreadsheet" },
-    { name: "シートの書式再設定（アクティブのみ）", functionName: "fixActiveSheet" },
+    //{ name: "シートの書式再設定（全体）", functionName: "fixSpreadsheet" },
+    //{ name: "シートの書式再設定（アクティブのみ）", functionName: "fixActiveSheet" },
     null,
     {
       name: "翻訳ファイルの出力 (Google Drive)",
       functionName: "generateTranslationFile",
     },
-    { name: "翻訳ファイルの出力 (GitHub)", functionName: "updatePullRequest" },
-    { name: "翻訳ファイルの出力 (Dry-run)", functionName: "generateDryRun" },
+    //{ name: "翻訳ファイルの出力 (GitHub)", functionName: "updatePullRequest" },
+    //{ name: "翻訳ファイルの出力 (Dry-run)", functionName: "generateDryRun" },
   ]);
 };
 
@@ -102,9 +103,14 @@ function GenerateTranslationFile<TReturn>(
     .filter(
       (s) => (notConvertColor ? notConvertColor != s.getTabColor() : true),
     );
-  const files = exportMode.startsWith("Ren'Py")
-    ? generateCode(sheets, exportMode === "Ren'Py with history support")
-    : generateJson(sheets);
+  let files;
+  if (exportMode.startsWith("Ren'Py")) {
+    files = generateCode(sheets, exportMode === "Ren'Py with history support");
+  } else if (exportMode == "trans-parser") {
+    files = generateTransParserJson(sheets);
+  } else {
+    files = generateJson(sheets);
+  }
   files.forEach((file) => context.addFile(file.name, file.content));
   return context.finish();
 }

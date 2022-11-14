@@ -22,7 +22,7 @@ interface TranslationMap {
 
 export function readRow(
   translations: TranslationMap,
-  [fileName, context, original, attributes, translation]: string[],
+  [fileName, attributes, original, translation]: string[],
 ): TranslationMap {
   if (fileName && original && translation && original !== translation) {
     const jsonPaths = attributes.split(/\r?\n|\r/).filter((jsonPath) => jsonPath.startsWith("."));

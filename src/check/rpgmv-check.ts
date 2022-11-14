@@ -59,7 +59,7 @@ export function checkAll(sheets: Sheet[]): string {
       const e = sheet
         .getRange("A3:F")
         .getValues()
-        .reduce<string[]>((errors, [mapId, id, original, attr, translate], index) => {
+        .reduce<string[]>((errors, [_mapId, id, original, attr, translate], index) => {
           const sheetRowNumber = index + 3;
           const args: CheckArgs = {
             id,

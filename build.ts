@@ -5,7 +5,8 @@ import { build } from "https://deno.land/x/esbuild@v0.15.13/mod.js";
 import httpPlugin from "https://deno.land/x/esbuild_plugin_http_fetch@v1.0.3/index.js";
 import { $, cd, ProcessOutput } from "https://deno.land/x/zx_deno@1.2.2/mod.mjs";
 import gasPlugin from "https://esm.sh/esbuild-gas-plugin@0.5.0/mod.ts";
-import { ghDescribe } from "https://raw.githubusercontent.com/proudust/gh-describe/v1.5.1/core/mod.ts";
+// 今のとこいらないのでコメントアウト
+// import { ghDescribe } from "https://raw.githubusercontent.com/proudust/gh-describe/v1.5.1/core/mod.ts";
 
 const profiles = {
   "main": {
@@ -16,11 +17,11 @@ const profiles = {
 
 async function generateVersionTs() {
   // const { describe } = await ghDescribe({ defaultTag: "0.0.0" });
-  const describe = 'v0.0.1';
+  const describe = "v0.0.1";
   await Deno.writeTextFile("version.ts", `export const version = "${describe}";\n`);
 }
 
-async function cliBuild() {
+async function _cliBuild() {
   const targets = [
     "x86_64-unknown-linux-gnu",
     "x86_64-pc-windows-msvc",

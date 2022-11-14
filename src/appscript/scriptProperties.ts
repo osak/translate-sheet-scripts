@@ -64,11 +64,11 @@ export class ScriptProperties {
   }
 
   /** 出力するデータの種類 (Ren'Py/Ren'Py with history support/JSON) */
-  public get exportMode(): "Ren'Py" | "Ren'Py with history support" | "JSON" {
+  public get exportMode(): "Ren'Py" | "Ren'Py with history support" | "JSON" | "trans-parser" {
     const mode = this.getValue("EXPORT_MODE");
     if (
       mode !== "Ren'Py" && mode !== "Ren'Py with history support" &&
-      mode !== "JSON"
+      mode !== "JSON" && mode !== "trans-parser"
     ) {
       throw new Error(`${mode} is invalid export mode.`);
     }
