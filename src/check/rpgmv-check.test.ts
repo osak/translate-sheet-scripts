@@ -21,14 +21,16 @@ Deno.test("[checkId] Not error", () => {
 
 Deno.test("[checkId] Not error", () => {
   const normal = toArgs({
-    translate: "\\c[1]１２３４５６７８９０１２３４５６７８９０\\c[0]",
+    attr: '["MGFaceset18",3,0,2]',
+    translate: "\\c[1]１２３４５６７８９０１２３４５６７８９０１２\\c[0]",
   });
   assertEquals(checkLength(normal), undefined);
 });
 
 Deno.test("[checkId] Error", () => {
   const normal = toArgs({
-    translate: "ごめんね! \\.\\.さっきまで裏でちょいと\n仕事してたもんだからさ。ああああああああああああ",
+    attr: '["MGFaceset18",3,0,2]',
+    translate: "ごめんね! \\.\\.さっきまで裏でちょいと\n仕事してたもんだからさ。あああああああああああああ",
   });
   assertEquals(!!checkLength(normal), true);
 });

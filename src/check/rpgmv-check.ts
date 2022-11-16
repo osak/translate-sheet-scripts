@@ -24,10 +24,11 @@ type CheckFunc = (args: CheckArgs) => string | undefined;
 const COMMAND_PATTERN = /\\(\.|(\w+)\[[^\]]+\]|{|})/g;
 
 /**
- * 字数が全角 20 文字 (半角 40 文字) を超える場合
+ * 字数が1行の最大文字数を超える場合。
+ * 顔グラありなら全角22文字、なしなら全角28文字。
  */
 export const checkLength: CheckFunc = (
-  { original, translate, sheetName, sheetRowNumber },
+  { attr, original, translate, sheetName, sheetRowNumber },
 ) => {
   const lines = translate.split("\n").map((s) => s.replace(COMMAND_PATTERN, ""));
   const length = Math.max(
@@ -39,9 +40,17 @@ export const checkLength: CheckFunc = (
         .reduce<number>((prev, curr) => prev + curr, 0)
     ),
   );
-  if (40 < length) {
+  let maxLength;
+  if (attr == "" || attr.substring(0, 3) == '[""') {
+    // 顔グラなし
+    maxLength = 56;
+  } else {
+    // 顔グラあり
+    maxLength = 44;
+  }
+  if (maxLength < length) {
     return trimIndent`
-      1行の文字数が全角 20 文字 (半角 40 文字) を超えています。
+      1行の文字数が全角 ${maxLength / 2} 文字 (半角 ${maxLength} 文字) を超えています。
       原文: "${original}"
       訳文: "${translate}"
       (${sheetName}:${sheetRowNumber})
