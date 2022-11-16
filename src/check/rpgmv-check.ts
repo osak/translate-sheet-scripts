@@ -46,6 +46,47 @@ export const checkLength: CheckFunc = (
   }
 };
 
+function isCommandMatching(command1: RegExpMatchArray, command2: RegExpMatchArray): boolean {
+  const name1 = command1[2];
+  const name2 = command2[2];
+
+  // フォント指定コマンド：日本語ローカライズに当たってフォントを変更する場合があるので、フォント名の違いは無視する
+  if (name1 == "fn" && name2 == "fn") {
+    return true;
+  }
+  return command1[0] == command2[0];
+}
+
+/**
+ * コマンド列が原文と違う場合
+ * 翻訳するとコマンドの順序が変わる可能性があるかもしれないが、そうなったらその時考える
+ */
+export const checkCommandSequence: CheckFunc = (
+  { original, translate, sheetName, sheetRowNumber },
+) => {
+  // サポートしてるコマンド
+  // \.
+  // \{
+  // \}
+  // \c[0], \fn[Doctor Glitch] 等
+  const commandPattern = /\\(\.|(\w+)\[[^\]]+\]|{|})/g;
+  const originalCommands = [...original.matchAll(commandPattern)];
+  const translateCommands = [...translate.matchAll(commandPattern)];
+
+  for (let i = 0; i < originalCommands.length; ++i) {
+    const originalCommand = originalCommands[i];
+    const translateCommand = translateCommands[i];
+    if (!isCommandMatching(originalCommand, translateCommand)) {
+      return trimIndent`
+        コマンドの順序が原文と異なっています。
+        原文: "${original}" (${(originalCommand.index || 0) + 1}文字目、期待: ${originalCommand[0]})
+        訳文: "${translate}" (${(translateCommand.index || 0) + 1}文字目、検出: ${translateCommand[0]})
+        (${sheetName}:${sheetRowNumber})
+      `;
+    }
+  }
+};
+
 /**
  * シートに対して全てのチェックをします。
  */
@@ -66,7 +107,7 @@ export function checkAll(sheets: Sheet[]): string {
             sheetName,
             sheetRowNumber,
           };
-          const checkFuncs: CheckFunc[] = [checkLength];
+          const checkFuncs: CheckFunc[] = [checkLength, checkCommandSequence];
           const e = checkFuncs
             .map((f) => f(args))
             .filter(<T>(r: T | undefined): r is T => Boolean(r));
