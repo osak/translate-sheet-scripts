@@ -77,6 +77,15 @@ export const checkCommandSequence: CheckFunc = (
   for (let i = 0; i < originalCommands.length; ++i) {
     const originalCommand = originalCommands[i];
     const translateCommand = translateCommands[i];
+    if (translateCommand == undefined) {
+      return trimIndent`
+        コマンド数が原文より少なくなっています（含まれている分の順番は一致）。
+        原文: "${original}" (${(originalCommand.index || 0) + 1}文字目、期待: ${originalCommand[0]})
+        訳文: "${translate}"
+        (${sheetName}:${sheetRowNumber})
+      `;
+    }
+
     if (!isCommandMatching(originalCommand, translateCommand)) {
       return trimIndent`
         コマンドの順序が原文と異なっています。
@@ -85,6 +94,17 @@ export const checkCommandSequence: CheckFunc = (
         (${sheetName}:${sheetRowNumber})
       `;
     }
+  }
+
+  if (originalCommands.length < translateCommands.length) {
+    const translateCommand = translateCommands[originalCommands.length];
+    return trimIndent`
+        コマンド数が原文より多くなっています（含まれている分の順番は一致）。
+        原文: "${original}"
+        訳文: "${translate}" (${(translateCommand.index || 0) + 1}文字目、検出: ${translateCommand[0]})
+        (${sheetName}:${sheetRowNumber})
+
+    `;
   }
 };
 

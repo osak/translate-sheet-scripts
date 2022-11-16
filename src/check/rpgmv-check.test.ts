@@ -56,3 +56,19 @@ Deno.test("[checkCommandSequence] Error", () => {
   });
   assertEquals(!!checkCommandSequence(normal), true);
 });
+
+Deno.test("[checkCommandSequence] Too many commands", () => {
+  const normal = toArgs({
+    original: "lately, all heading \\c[3]south\\c[0] to \\c[3]Caste City\\c[0].",
+    translate: "最近、みんな \\c[0]南\\c[3]の \\c[3]Caste City\\c[0] \\.に向かって行くね。",
+  });
+  assertEquals(!!checkCommandSequence(normal), true);
+});
+
+Deno.test("[checkCommandSequence] Too few commands", () => {
+  const normal = toArgs({
+    original: "lately, all heading \\c[3]south\\c[0] to \\c[3]Caste City\\c[0].",
+    translate: "最近、みんな \\c[0]南\\c[3]の \\c[3]Caste City に向かって行くね。",
+  });
+  assertEquals(!!checkCommandSequence(normal), true);
+});
