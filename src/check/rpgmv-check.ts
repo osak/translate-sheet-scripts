@@ -20,13 +20,15 @@ interface CheckArgs {
 
 type CheckFunc = (args: CheckArgs) => string | undefined;
 
+const COMMAND_PATTERN = /\\(\.|(\w+)\[[^\]]+\]|{|})/g;
+
 /**
- * 字数が全角 16 文字 (半角 32 文字) を超える場合
+ * 字数が全角 20 文字 (半角 40 文字) を超える場合
  */
 export const checkLength: CheckFunc = (
   { original, translate, sheetName, sheetRowNumber },
 ) => {
-  const lines = translate.split("\n").map((s) => s.replace(/\\(?:SE\[\d+\]|\.)/g, ""));
+  const lines = translate.split("\n").map((s) => s.replace(COMMAND_PATTERN, ""));
   const length = Math.max(
     ...lines.map((s) =>
       s
@@ -69,9 +71,8 @@ export const checkCommandSequence: CheckFunc = (
   // \{
   // \}
   // \c[0], \fn[Doctor Glitch] 等
-  const commandPattern = /\\(\.|(\w+)\[[^\]]+\]|{|})/g;
-  const originalCommands = [...original.matchAll(commandPattern)];
-  const translateCommands = [...translate.matchAll(commandPattern)];
+  const originalCommands = [...original.matchAll(COMMAND_PATTERN)];
+  const translateCommands = [...translate.matchAll(COMMAND_PATTERN)];
 
   for (let i = 0; i < originalCommands.length; ++i) {
     const originalCommand = originalCommands[i];
