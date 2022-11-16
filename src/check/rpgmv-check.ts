@@ -1,3 +1,4 @@
+import { _format } from "https://deno.land/std@0.117.0/testing/asserts.ts";
 import { trimIndent } from "../../deps.ts";
 
 interface Range {
@@ -118,6 +119,7 @@ export function checkAll(sheets: Sheet[]): string {
       const e = sheet
         .getRange("A3:F")
         .getValues()
+        .filter((row) => row[4] != "") // 未翻訳テキストはスキップ
         .reduce<string[]>((errors, [_mapId, id, attr, original, translate], index) => {
           const sheetRowNumber = index + 3;
           const args: CheckArgs = {
